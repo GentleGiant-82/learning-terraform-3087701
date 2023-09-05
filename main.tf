@@ -22,7 +22,7 @@ data "aws_ami" "app_ami" {
 resource "aws_instance" "blog" {
   ami           = data.aws_ami.app_ami.id
   instance_type = var.instance_type
-  # subnet_id = var.instance_subnet
+  subnet_id = var.instance_subnet
 
   vpc_security_group_ids = [aws_security_group.blog.id]
 
