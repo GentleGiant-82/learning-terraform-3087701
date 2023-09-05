@@ -8,6 +8,11 @@ variable "instance_subnet" {
     default     = "subnet-07ab632f0767b06e7"
 }
 
+variable "instance_subnet_2" {
+    description = "Default 2nd subnet to use when creating new instances"
+    default     = "subnet-04bbe57ab1ab606e1"
+}
+
 variable "default_vpc" {
     description = "Default vpc to use for this terraform Learning"
     default     = "vpc-0b91ca3b9fa0c6020"

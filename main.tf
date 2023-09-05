@@ -33,21 +33,25 @@ data "aws_ami" "app_ami" {
 #}
 
 
-resource "aws_instance" "blog" {
-  ami           = data.aws_ami.app_ami.id
-  instance_type = var.instance_type
-  subnet_id = var.instance_subnet
+module "autoscaling" {
+  source  = "terraform-aws-modules/autoscaling/aws"
+  version = "6.10.0"
+  # insert the 1 required variable here
 
-  #vpc_security_group_ids = [aws_security_group.blog.id]
-  vpc_security_group_ids = [module.blog_sg.security_group_id]
+  name = "blog"
+  min_size = 1
+  max_size = 2
 
-  tags = {
-    Name = "HelloWorld"
-  }
+  vpc_zone_identifier = [var.instance_subnet, var.instance_subnet_2]
+  target_group_arns   = module.blog_alb.target_group_arns
+  security_groups     = [module.blog_sg.security_group_id]
+
+  image_id           = data.aws_ami.app_ami.id
+  instance_type      = var.instance_type
 }
 
 
-module "alb" {
+module "blog_alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "~> 8.0"
 
@@ -56,7 +60,7 @@ module "alb" {
   load_balancer_type = "application"
 
   vpc_id             = var.default_vpc
-  subnets            = [var.instance_subnet]
+  subnets            = [var.instance_subnet, var.instance_subnet_2]
   security_groups    = [module.blog_sg.security_group_id]
 
   target_groups = [
