@@ -88,7 +88,7 @@ module "blog_alb" {
 module "blog_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
-  name = "%{var.environment.name}-blog"
+  name = "${var.environment.name}-blog"
 
   vpc_id = var.default_vpc
   #vpc_id = module.vpc.public_subnets[0]
