@@ -3,7 +3,7 @@ data "aws_ami" "app_ami" {
 
   filter {
     name   = "name"
-    values = ["bitnami-tomcat-*-x86_64-hvm-ebs-nami"]
+    values = [var.ami_filter.name]
   }
 
   filter {
@@ -11,7 +11,7 @@ data "aws_ami" "app_ami" {
     values = ["hvm"]
   }
 
-  owners = ["979382823631"] # Bitnami
+  owners = [var.ami_filter.owner]
 }
 
 
@@ -38,9 +38,9 @@ module "autoscaling" {
   version = "6.10.0"
   # insert the 1 required variable here
 
-  name = "blog"
-  min_size = 1
-  max_size = 2
+  name = "%{var.environment.name}-blog"
+  min_size = var.min_instances
+  max_size = var.max_instances
 
   vpc_zone_identifier = [var.instance_subnet, var.instance_subnet_2]
   target_group_arns   = module.blog_alb.target_group_arns
@@ -55,7 +55,7 @@ module "blog_alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "~> 8.0"
 
-  name = "blog-alb"
+  name = "%{var.environment.name}-blog-alb"
 
   load_balancer_type = "application"
 
@@ -65,7 +65,7 @@ module "blog_alb" {
 
   target_groups = [
     {
-      name_prefix      = "blog-"
+      name_prefix      = "${var.environment.name}-"
       backend_protocol = "HTTP"
       backend_port     = 80
       target_type      = "instance"
@@ -81,7 +81,7 @@ module "blog_alb" {
   ]
 
   tags = {
-    Environment = "Dev"
+    Environment = var.environment.name
   }
 }
 
@@ -89,7 +89,7 @@ module "blog_alb" {
 module "blog_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
-  name = "blog_new"
+  name = "%{var.environment.name}-blog"
 
   vpc_id = var.default_vpc
   #vpc_id = module.vpc.public_subnets[0]
