@@ -36,9 +36,8 @@ data "aws_ami" "app_ami" {
 module "autoscaling" {
   source  = "terraform-aws-modules/autoscaling/aws"
   version = "6.10.0"
-  # insert the 1 required variable here
 
-  name = "%{var.environment.name}-blog"
+  name = "${var.environment.name}-blog"
   min_size = var.min_instances
   max_size = var.max_instances
 
@@ -55,7 +54,7 @@ module "blog_alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "~> 8.0"
 
-  name = "%{var.environment.name}-blog-alb"
+  name = "${var.environment.name}-blog-alb"
 
   load_balancer_type = "application"
 
