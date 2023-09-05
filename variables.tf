@@ -9,6 +9,6 @@ variable "instance_subnet" {
 }
 
 variable "default_vpc" {
-    description = "Default vpc to use for this terraform Learning
+    description = "Default vpc to use for this terraform Learning"
     default     = "vpc-0b91ca3b9fa0c6020"
 }
